@@ -26,7 +26,7 @@ const Accounts = (accounts) => {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState('');
-  const [tabIndex, setTabIndex] = useState(0);
+  const [tabIndex, setTabIndex] = useState(1);
   const [details, setDetails] = useState('');
 
   const handleTabChange = (event, newTabIndex) => {
