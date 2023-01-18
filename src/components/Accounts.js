@@ -17,6 +17,10 @@ import WalletSdk, {
   Expression,
   requestBuilder,
   requestItem,
+  Enum,
+  U8,
+  TypeId,
+  Tuple
 } from '@radixdlt/wallet-sdk'
 
 const walletSdk = WalletSdk({ dAppId: 'dashboard', networkId: 11 })
@@ -28,6 +32,8 @@ const Accounts = (accounts) => {
   const [amount, setAmount] = useState('');
   const [tabIndex, setTabIndex] = useState(1);
   const [details, setDetails] = useState('');
+  const [toToken, setToToken] = useState('');
+  const [amountToken, setAmountToken] = useState('');
 
   const handleTabChange = (event, newTabIndex) => {
     setTabIndex(newTabIndex);
@@ -78,12 +84,36 @@ const Accounts = (accounts) => {
   .build()
   .toString();
 
+  const manifestToken = new ManifestBuilder()
+  .createResource(
+    Enum('Fungible', U8(0)),
+    Array(TypeId.Tuple),
+    Array(TypeId.Tuple),
+    Enum('Some', Enum('Fungible', Decimal(1.0)))
+  )
+  // .withdrawFromAccountByAmount('account_tdx_b_1qlgm5udxrzhfal5n45q85wlgnhma3stj5gs6ulkal97qa3xdx9', 10, "resource_tdx_b_1qzkcyv5dwq3r6kawy6pxpvcythx8rh8ntum6ws62p95s9hhz9x")
+  // .takeFromWorktopByAmount(10, "resource_tdx_b_1qzkcyv5dwq3r6kawy6pxpvcythx8rh8ntum6ws62p95s9hhz9x", "xrd_bucket")
+  // // .callMethod(from, "buy_gumball", [Bucket("xrd_bucket")])
+  // .callMethod('account_tdx_b_1quxmuxrqtfv9zxtmnfpffhwv2ytl2urr77g7h7v8fa6qtyuujz', "deposit_batch", [Expression("ENTIRE_WORKTOP")])
+  .callMethod(toToken, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
+  .build()
+  .toString();
+
   console.log(manifest)
+  console.log(manifestToken)
   
   const sendTx = (address) =>
   getMethods().sendTransaction({
     version: 1,
     transactionManifest: manifest,
+  })
+
+  const sendToken = (address) =>
+  getMethods().sendTransaction({
+    version: 1,
+    transactionManifest: `
+    CREATE_RESOURCE Enum("Fungible",0u8) Array<Tuple>() Array<Tuple>() Enum("Some",Enum("Fungible",Decimal("${amountToken}")));
+    CALL_METHOD ComponentAddress("${toToken}") "deposit_batch" Expression("ENTIRE_WORKTOP");`,
   })
 
   return (
@@ -203,7 +233,7 @@ const Accounts = (accounts) => {
             noValidate
             autoComplete="off"
             >
-            <div>
+            {/* <div>
               <TextField
                 id="outlined-required"
                 label="Enter the name"
@@ -212,27 +242,27 @@ const Accounts = (accounts) => {
                   // setAmount(e.target.value);
                 }}  
               />
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
               <TextField
                 fullWidth
                 id="outlined-required"
                 label="Enter the amount minted"
                 onChange={(e) => {
-                  // console.log(e.target.value);
-                  // setTo(e.target.value);
+                  console.log(e.target.value);
+                  setToToken(e.target.value);
                 }}  
               />
 
-            </div>
+            </div> */}
             <div>
               <TextField
                 fullWidth
                 id="outlined-required"
                 label="Enter the amount you want to send"
                 onChange={(e) => {
-                  // console.log(e.target.value);
-                  // setTo(e.target.value);
+                  console.log(e.target.value);
+                  setAmountToken(e.target.value);
                 }}  
               />
 
@@ -243,15 +273,15 @@ const Accounts = (accounts) => {
                 id="outlined-required"
                 label="Enter the account address"
                 onChange={(e) => {
-                  // console.log(e.target.value);
-                  // setTo(e.target.value);
+                  console.log(e.target.value);
+                  setToToken(e.target.value);
                 }}  
               />
 
             </div>
             <Button variant="contained"
               onClick={() => {
-                {sendTx(from)}
+                {sendToken(from)}
               }}
               >Send Token
           </Button>
