@@ -13,7 +13,8 @@ import {
 
 function App() {
   const [accounts, setAccounts] = useState('');
-  const [address, setAddress] = useState();
+  const [connected, setConnected] = useState();
+
   useEffect(()=>{
     configure({
       dAppId: 'dashboard',
@@ -24,6 +25,7 @@ function App() {
           oneTimeAccountsWithoutProofOfOwnership: {},
         }).map(({ oneTimeAccounts }) => {
           setState({ connected: true });
+          setConnected(true)
           setAccounts(oneTimeAccounts);
           console.log(oneTimeAccounts)
           return oneTimeAccounts[0].address;
@@ -32,6 +34,7 @@ function App() {
       },
       onDisconnect: ({ setState }) => {
         setState({ connected: false });
+        setConnected()
         setAccounts('');
       },
       onCancel() {
@@ -95,7 +98,10 @@ function App() {
       <div>
         <radix-connect-button></radix-connect-button>
       </div>
+      { connected ?
       <Accounts accounts={accounts}/>
+      : <div className="Accounts">There are no accounts connected</div>
+      }
     </div>
   );
 }

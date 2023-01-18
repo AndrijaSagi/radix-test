@@ -117,7 +117,7 @@ const Accounts = (accounts) => {
             />
           </div>
         )
-        : 'There are no accounts linked'}
+        : 'There are no accounts connected'}
         {from ? 
           <div>
             <Box>
