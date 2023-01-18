@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/radix-test/static/css/main.c9b3aaf8.css",
-    "main.js": "/radix-test/static/js/main.b1ca006f.js",
+    "main.js": "/radix-test/static/js/main.ec3711cb.js",
     "static/js/787.cff8d540.chunk.js": "/radix-test/static/js/787.cff8d540.chunk.js",
     "index.html": "/radix-test/index.html",
     "main.c9b3aaf8.css.map": "/radix-test/static/css/main.c9b3aaf8.css.map",
-    "main.b1ca006f.js.map": "/radix-test/static/js/main.b1ca006f.js.map",
+    "main.ec3711cb.js.map": "/radix-test/static/js/main.ec3711cb.js.map",
     "787.cff8d540.chunk.js.map": "/radix-test/static/js/787.cff8d540.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c9b3aaf8.css",
-    "static/js/main.b1ca006f.js"
+    "static/js/main.ec3711cb.js"
   ]
 }
