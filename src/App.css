@@ -3,11 +3,20 @@
   justify-content: space-around;
   align-items: center;
   font-size: calc(10px + 2vmin);
+  background: #999
 }
 
 .App-logo {
   height: 10vmin;
   pointer-events: none;
+}
+
+.App-accounts {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: calc(10px + 2vmin);
+  background: red;
 }
 
 @media (prefers-reduced-motion: no-preference) {

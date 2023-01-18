@@ -1,0 +1,14 @@
+.Accounts {
+    background: white;
+    background-size: 100%;
+    width: 70%;
+    height: 70%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    grid-template-columns: auto auto auto;  /*Add this*/
+    align-items: center;
+    justify-content: center;
+  }
