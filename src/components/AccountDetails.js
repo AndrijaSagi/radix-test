@@ -1,29 +1,9 @@
 import React from 'react';
 import './AccountDetails.css';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import { useEffect, useState } from 'react';
-import { configure, getMethods } from '@radixdlt/connect-button';
-import WalletSdk, {
-  ManifestBuilder,
-  Decimal,
-  ResourceAddress,
-  Bucket,
-  Expression,
-  requestBuilder,
-  requestItem,
-  Enum,
-  U8,
-  TypeId,
-  Tuple
-} from '@radixdlt/wallet-sdk'
 
-const AccountDetails = (address) => {
+const AccountDetails = () => {
 
   const [details, setDetails] = useState('');
 

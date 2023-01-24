@@ -10,15 +10,10 @@ import { getMethods } from '@radixdlt/connect-button';
 import WalletSdk, {
     ManifestBuilder,
     Decimal,
-    ResourceAddress,
-    Bucket,
     Expression,
-    requestBuilder,
-    requestItem,
     Enum,
     U8,
-    TypeId,
-    Tuple
+    TypeId
   } from '@radixdlt/wallet-sdk'
 
 const CreateTokens = () => {
@@ -40,7 +35,11 @@ const CreateTokens = () => {
   const [transaction, setTransaction] = useState('');
   const [error, setError] = useState('');
   const [toToken, setToToken] = useState('');
+  const [nameToken, setNameToken] = useState('');
+  const [descriptionToken, setDescriptionToken] = useState('');
+  const [symbolToken, setSymbolToken] = useState('');
   const [amountToken, setAmountToken] = useState('');
+  const [transactions, setTransactions] = useState(localStorage.getItem(from));
 
   const handleClose = () => setOpen(false);
 
@@ -63,7 +62,7 @@ const CreateTokens = () => {
   getMethods().sendTransaction({
     version: 1,
     transactionManifest: `
-    CREATE_RESOURCE Enum("Fungible",0u8) Array<Tuple>() Array<Tuple>() Enum("Some",Enum("Fungible",Decimal("${amountToken}")));
+    CREATE_RESOURCE Enum("Fungible",0u8)  Array<Tuple>(Tuple("name", "${nameToken}"), Tuple("description", "${descriptionToken}"), Tuple("symbol", "${symbolToken}")) Array<Tuple>() Enum("Some",Enum("Fungible",Decimal("${amountToken}")));
     CALL_METHOD ComponentAddress("${toToken}") "deposit_batch" Expression("ENTIRE_WORKTOP");`,
   })
 
@@ -77,6 +76,42 @@ const CreateTokens = () => {
             noValidate
             autoComplete="off"
             >
+            <div>
+              <TextField
+                fullWidth
+                id="outlined-required"
+                label="Enter the name of the token"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setNameToken(e.target.value);
+                }}  
+              />
+
+            </div>
+            <div>
+              <TextField
+                fullWidth
+                id="outlined-required"
+                label="Enter the description of the token"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setDescriptionToken(e.target.value);
+                }}  
+              />
+
+            </div>
+            <div>
+              <TextField
+                fullWidth
+                id="outlined-required"
+                label="Enter the symbol of the token"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setSymbolToken(e.target.value);
+                }}  
+              />
+
+            </div>
             <div>
               <TextField
                 fullWidth
@@ -101,7 +136,7 @@ const CreateTokens = () => {
               />
 
             </div>
-            <Button variant="contained" disabled={from === '' || toToken === '' || amountToken === ''}
+            <Button variant="contained" disabled={from === '' || toToken === '' || amountToken === '' || nameToken === '' || amountToken === '' || descriptionToken === ''}
               onClick={() => {
                 sendToken(from).then((response) => {
                     
@@ -109,6 +144,9 @@ const CreateTokens = () => {
                   {
                     setTransaction(response.value.transactionIntentHash)
                     setOpen(true)
+                    const allTransactions = JSON.parse(localStorage.getItem(from)) || [];
+                    allTransactions.push(response.value.transactionIntentHash); 
+                    localStorage.setItem(from, JSON.stringify(allTransactions));
                   }
                 }).catch((error) => {
                   console.error(`onRejected function called: ${error.message}`);
@@ -127,10 +165,10 @@ const CreateTokens = () => {
           >
             <Box sx={style}>
               <Typography id="modal-modal-title" variant="h6" component="h2">
-                {transaction ? `You've successfully sent ${amountToken}` : 'Something went wrong'}
+                {transaction ? `You've successfully sent ${amountToken} ${symbolToken}s` : 'Something went wrong'}
               </Typography>
               <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                {transaction ? <p>Transaction hash: {transaction}</p> : <p>Error: {error}</p>}
+                {transaction ? `Transaction hash: ${transaction}` : `Error: ${error}`}
               </Typography>
             </Box>
           </Modal>

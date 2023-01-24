@@ -3,6 +3,7 @@ import Accounts from './components/Accounts';
 import AccountDetails from './components/AccountDetails';
 import SendTokens from './components/SendTokens';
 import CreateTokens from './components/CreateTokens';
+import Transactions from './components/Transactions';
 import { useEffect, useState } from 'react';
 import { configure } from '@radixdlt/connect-button';
 import { styled, alpha } from '@mui/material/styles';
@@ -324,6 +325,8 @@ const renderMobileMenu = (
       <SendTokens/> :
       connected && component.text === 'Create Token' ?
       <CreateTokens/> :
+      connected && component.text === 'Transactions History' ?
+      <Transactions/> :
       <div className="Accounts">There are no accounts connected</div>
       }
       </Box>

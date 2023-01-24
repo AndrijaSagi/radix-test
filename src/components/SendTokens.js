@@ -34,6 +34,7 @@ const SendTokens = () => {
   const [open, setOpen] = useState(false);
   const [transaction, setTransaction] = useState('');
   const [error, setError] = useState('');
+  const [transactions, setTransactions] = useState(localStorage.getItem(from));
 
   // const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -65,9 +66,6 @@ const SendTokens = () => {
 
   return (
     <div className="SendToken">
-      {/* <Box>
-      <p>Send from account: {localStorage.getItem('address')}</p>
-      </Box> */}
         <Box
             component="form"
             sx={{
@@ -104,6 +102,9 @@ const SendTokens = () => {
                   {
                     setTransaction(response.value.transactionIntentHash)
                     setOpen(true)
+                    const allTransactions = JSON.parse(localStorage.getItem(from)) || [];
+                    allTransactions.push(response.value.transactionIntentHash); 
+                    localStorage.setItem(from, JSON.stringify(allTransactions));
                   }
                 }).catch((error) => {
                   console.error(`onRejected function called: ${error.message}`);

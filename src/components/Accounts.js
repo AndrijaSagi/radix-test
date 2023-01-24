@@ -1,27 +1,16 @@
 import React from 'react';
 import './Accounts.css';
-import AccountDetails from './AccountDetails';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { useEffect, useState } from 'react';
-import { configure, getMethods } from '@radixdlt/connect-button';
+import { useState } from 'react';
+import { getMethods } from '@radixdlt/connect-button';
 import WalletSdk, {
   ManifestBuilder,
   Decimal,
-  ResourceAddress,
-  Bucket,
   Expression,
-  requestBuilder,
-  requestItem,
   Enum,
   U8,
-  TypeId,
-  Tuple
+  TypeId
 } from '@radixdlt/wallet-sdk'
 
 const walletSdk = WalletSdk({ dAppId: 'dashboard', networkId: 11 })
@@ -29,14 +18,9 @@ const walletSdk = WalletSdk({ dAppId: 'dashboard', networkId: 11 })
 const Accounts = (accounts, address = '') => {
 
   const [from, setFrom] = useState('');
-  const [tabIndex, setTabIndex] = useState(1);
   const [details, setDetails] = useState('');
   const [toToken, setToToken] = useState('');
   const [amountToken, setAmountToken] = useState('');
-
-  const handleTabChange = (event, newTabIndex) => {
-    setTabIndex(newTabIndex);
-  };
 
   accounts.func(address = from);
 
