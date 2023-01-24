@@ -1,5 +1,6 @@
 import React from 'react';
 import './Accounts.css';
+import AccountDetails from './AccountDetails';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
@@ -25,11 +26,9 @@ import WalletSdk, {
 
 const walletSdk = WalletSdk({ dAppId: 'dashboard', networkId: 11 })
 
-const Accounts = (accounts) => {
+const Accounts = (accounts, address = '') => {
 
   const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [amount, setAmount] = useState('');
   const [tabIndex, setTabIndex] = useState(1);
   const [details, setDetails] = useState('');
   const [toToken, setToToken] = useState('');
@@ -38,6 +37,8 @@ const Accounts = (accounts) => {
   const handleTabChange = (event, newTabIndex) => {
     setTabIndex(newTabIndex);
   };
+
+  accounts.func(address = from);
 
   async function getFungibles(url = '', data = {}) {
     // Default options are marked with *
@@ -65,25 +66,6 @@ const Accounts = (accounts) => {
     return response.json(); // parses JSON response into native JavaScript objects
   }
 
-  const manifest = new ManifestBuilder()
-  .callMethod(
-    from,
-    'withdraw_by_amount',
-    [
-      Decimal(amount),
-      ResourceAddress(
-        'resource_tdx_b_1qzkcyv5dwq3r6kawy6pxpvcythx8rh8ntum6ws62p95s9hhz9x'
-      ),
-    ]
-  )
-  // .withdrawFromAccountByAmount('account_tdx_b_1qlgm5udxrzhfal5n45q85wlgnhma3stj5gs6ulkal97qa3xdx9', 10, "resource_tdx_b_1qzkcyv5dwq3r6kawy6pxpvcythx8rh8ntum6ws62p95s9hhz9x")
-  // .takeFromWorktopByAmount(10, "resource_tdx_b_1qzkcyv5dwq3r6kawy6pxpvcythx8rh8ntum6ws62p95s9hhz9x", "xrd_bucket")
-  // // .callMethod(from, "buy_gumball", [Bucket("xrd_bucket")])
-  // .callMethod('account_tdx_b_1quxmuxrqtfv9zxtmnfpffhwv2ytl2urr77g7h7v8fa6qtyuujz', "deposit_batch", [Expression("ENTIRE_WORKTOP")])
-  .callMethod(to, "deposit_batch", [Expression("ENTIRE_WORKTOP")])
-  .build()
-  .toString();
-
   const manifestToken = new ManifestBuilder()
   .createResource(
     Enum('Fungible', U8(0)),
@@ -99,14 +81,8 @@ const Accounts = (accounts) => {
   .build()
   .toString();
 
-  console.log(manifest)
   console.log(manifestToken)
   
-  const sendTx = (address) =>
-  getMethods().sendTransaction({
-    version: 1,
-    transactionManifest: manifest,
-  })
 
   const sendToken = (address) =>
   getMethods().sendTransaction({
@@ -123,9 +99,10 @@ const Accounts = (accounts) => {
         accounts.accounts.map((item, index) => <div key={index}>
             <p style={{fontSize: 15+ 'px'}}>Account Name: {item.label}</p>
             <p style={{fontSize: 15 + 'px'}}>Account Address: {item.address}</p>
-            <input type="radio" value={item.address} name="address"      
+            <input type="radio" value={item.address} name="address" checked={localStorage.getItem('address') === item.address ? true : false}   
               onChange={(e) => {
                 setFrom(e.target.value);
+                localStorage.setItem('address', e.target.value)
                 getFungibles('https://nebunet-gateway.radixdlt.com/entity/fungibles', { address: e.target.value })
                 .then((data) => {
                   if(data.fungibles.total_count > 1)
@@ -148,147 +125,6 @@ const Accounts = (accounts) => {
           </div>
         )
         : 'There are no accounts connected'}
-        {from ? 
-          <div>
-            <Box>
-              <Tabs value={tabIndex} onChange={handleTabChange} centered>
-                <Tab label="Send Transaction" />
-                <Tab label="See Account Details" />
-                <Tab label="Create and Send a Token" />
-              </Tabs>
-            </Box>
-            {tabIndex === 0 && (
-            <Box
-            component="form"
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch' },
-            }}
-            noValidate
-            autoComplete="off"
-            >
-            <div>
-              <TextField
-                id="outlined-required"
-                label="Enter the amount"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setAmount(e.target.value);
-                }}  
-              />
-              </div>
-              <div>
-              <TextField
-                fullWidth
-                id="outlined-required"
-                label="Enter the account address"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setTo(e.target.value);
-                }}  
-              />
-            </div>
-            <Button variant="contained"
-              onClick={() => {
-                {sendTx(from)}
-              }}
-              >Send Transaction
-          </Button>
-          </Box>
-          )}
-                     {tabIndex === 1 && (
-            <Box
-            component="form"
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch' },
-            }}
-            noValidate
-            autoComplete="off"
-            >
-              { details ? 
-              <div>
-              <p style={{fontSize: 12 + 'px'}}>Network: {details.ledger_state ? details.ledger_state.network : 'No Data'}</p>
-              <p style={{fontSize: 12 + 'px'}}>Last Update: {details.ledger_state ? details.ledger_state.proposer_round_timestamp : 'No Data'}</p>
-              <p style={{fontSize: 12 + 'px'}}>State Version: {details.ledger_state ? details.ledger_state.state_version : 'No Data'}</p>
-              <hr class="solid"></hr>
-              {details.fungibles.items.length ?
-        Array.from(details.fungibles.items).map((item, index) => <div key={index}>
-            <p style={{fontSize: 12 + 'px'}}>Type: {item.amount.address === 'resource_tdx_b_1qzkcyv5dwq3r6kawy6pxpvcythx8rh8ntum6ws62p95s9hhz9x' ? 'XRD'  : item.amount.symbol}</p>
-            <p style={{fontSize: 12 + 'px'}}>Ammount: {item.amount.value}</p>
-            {item.amount.description ? <p style={{fontSize: 12 + 'px'}}>Name: {item.amount.name}</p> : ''}
-            {item.amount.description ? <p style={{fontSize: 12 + 'px'}}>Description: {item.amount.description}</p> : ''}
-            <hr class="solid"></hr>
-          </div>
-        )
-        : 'No Data'}
-        </div>
-              : 'No Data'}
-          </Box>
-          )}
-                     {tabIndex === 2 && (
-            <Box
-            component="form"
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch' },
-            }}
-            noValidate
-            autoComplete="off"
-            >
-            {/* <div>
-              <TextField
-                id="outlined-required"
-                label="Enter the name"
-                onChange={(e) => {
-                  // console.log(e.target.value);
-                  // setAmount(e.target.value);
-                }}  
-              />
-              </div> */}
-              {/* <div>
-              <TextField
-                fullWidth
-                id="outlined-required"
-                label="Enter the amount minted"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setToToken(e.target.value);
-                }}  
-              />
-
-            </div> */}
-            <div>
-              <TextField
-                fullWidth
-                id="outlined-required"
-                label="Enter the amount you want to send"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setAmountToken(e.target.value);
-                }}  
-              />
-
-            </div>
-            <div>
-              <TextField
-                fullWidth
-                id="outlined-required"
-                label="Enter the account address"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setToToken(e.target.value);
-                }}  
-              />
-
-            </div>
-            <Button variant="contained"
-              onClick={() => {
-                {sendToken(from)}
-              }}
-              >Send Token
-          </Button>
-          </Box>
-          )}
-        </div>
-       : ''}
       </Stack>
     </div> 
   )
